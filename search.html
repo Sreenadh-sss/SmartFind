@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Items – SmartFind System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="navbar-placeholder"></div>
+
+    <main class="main-content">
+        <div class="page-header">
+            <div>
+                <h1>🔎 Search Campus Reports</h1>
+                <p>Filter through all reported items across college locations, categories, and dates</p>
+            </div>
+            <span id="search-count-label" style="font-size: 0.9rem; font-weight: 600; color: var(--muted);"></span>
+        </div>
+
+        <div id="search-alert-container"></div>
+
+        <!-- Search Controls Filter Bar -->
+        <div class="card" style="margin-bottom: 1.5rem;">
+            <div class="card-body">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) 110px; gap: 1rem; align-items: end;">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label" for="search-query">Item Name or Keyword</label>
+                        <input type="text" id="search-query" class="form-control" placeholder="e.g. iPhone, backpack, keys...">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label" for="search-type">Report Type</label>
+                        <select id="search-type" class="form-control">
+                            <option value="">All Types (Lost &amp; Found)</option>
+                            <option value="LOST">Lost Only</option>
+                            <option value="FOUND">Found Only</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label" for="search-location">Location / Building</label>
+                        <input type="text" id="search-location" class="form-control" placeholder="e.g. Library, Cafeteria, Lab...">
+                    </div>
+                    <div>
+                        <button type="button" id="search-btn" class="btn btn-primary btn-block">
+                            Search
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search Results Table -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">📋 Search Results</div>
+            </div>
+            <div class="card-body" style="padding: 0;">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Report ID</th>
+                                <th>Item Name</th>
+                                <th>Type</th>
+                                <th>Location</th>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Match Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="search-results-table">
+                            <tr>
+                                <td colspan="7" style="text-align: center; padding: 2rem;">Loading reports...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>SmartFind – Smart Lost & Found System | College Capstone Project</p>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            initSearchPage();
+        });
+    </script>
+</body>
+</html>

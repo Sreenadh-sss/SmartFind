@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartFind – Smart Lost & Found System Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Dynamic Navigation Bar -->
+    <div id="navbar-placeholder"></div>
+
+    <main class="main-content">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div>
+                <h1>Campus Lost & Found Dashboard</h1>
+                <p>Real-time tracking and intelligent AI matching for college lost and found items</p>
+            </div>
+            <div style="display: flex; gap: 0.6rem; align-items: center;">
+                <button class="btn btn-secondary btn-sm" onclick="refreshDashboardStats(); loadRecentReports();">
+                    🔄 Refresh Data
+                </button>
+                <a href="lost-item.html" class="btn btn-danger btn-sm">➕ Report Lost Item</a>
+                <a href="found-item.html" class="btn btn-success btn-sm">➕ Report Found Item</a>
+            </div>
+        </div>
+
+        <div id="dash-alert-container"></div>
+
+        <!-- Metric Statistics Cards -->
+        <section class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-icon total">📦</div>
+                <div class="metric-info">
+                    <h3>Total Reports</h3>
+                    <div class="metric-number" id="stat-total-reports">0</div>
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon lost">🔍</div>
+                <div class="metric-info">
+                    <h3>Lost Items</h3>
+                    <div class="metric-number" id="stat-total-lost">0</div>
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon found">🤝</div>
+                <div class="metric-info">
+                    <h3>Found Items</h3>
+                    <div class="metric-number" id="stat-total-found">0</div>
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon matches">⚡</div>
+                <div class="metric-info">
+                    <h3>Potential Matches</h3>
+                    <div class="metric-number" id="stat-potential-matches">0</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Dashboard 2-Column Grid -->
+        <div class="dashboard-grid">
+            <!-- Left Column: Reports List & Table -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">📋 Reported Campus Items</div>
+                    <div class="search-bar-inline">
+                        <input type="text" id="dash-search-input" class="form-control" placeholder="Quick search items..." style="width: 200px; padding: 0.4rem 0.7rem; font-size: 0.85rem;">
+                        <select id="dash-filter-type" class="form-control" style="width: 120px; padding: 0.4rem 0.7rem; font-size: 0.85rem;">
+                            <option value="">All Types</option>
+                            <option value="LOST">Lost</option>
+                            <option value="FOUND">Found</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="card-body" style="padding: 0;">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Item Name</th>
+                                    <th>Type</th>
+                                    <th>Location</th>
+                                    <th>Date</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reports-table-body">
+                                <tr>
+                                    <td colspan="6" style="text-align: center; padding: 2rem;">Loading reports...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: AI Matching & Selected Item Details -->
+            <div>
+                <!-- Smart AI Matching Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">🤖 AI-Based Smart Matcher</div>
+                    </div>
+                    <div class="card-body">
+                        <p style="font-size: 0.88rem; color: var(--muted); margin-bottom: 0.9rem;">
+                            Select any <strong>LOST</strong> report from the list or enter its Report ID below to compute similarity scores against all active found items.
+                        </p>
+                        <div id="match-alert-container"></div>
+                        <div class="form-group">
+                            <label class="form-label" for="match-lost-id-input">Lost Report ID:</label>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <input type="number" id="match-lost-id-input" class="form-control" placeholder="e.g. 1" min="1">
+                                <button class="btn btn-primary" onclick="runMatching()" style="white-space: nowrap;">
+                                    Find Possible Match
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Results Container -->
+                        <div id="matching-results-container" style="margin-top: 1.2rem;">
+                            <div style="font-size: 0.85rem; color: #94a3b8; text-align: center; padding: 1.5rem; background: #f8fafc; border-radius: 8px; border: 1px dashed #cbd5e1;">
+                                No item selected yet. Select a LOST item from the table or enter an ID and click <strong>"Find Possible Match"</strong>.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Selected Item Details Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">🔍 Selected Report Details</div>
+                    </div>
+                    <div class="card-body">
+                        <div id="item-details-content">
+                            <p style="font-size: 0.88rem; color: #94a3b8; text-align: center; padding: 1.2rem;">
+                                Click on any row in the reports table to view complete details here.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>SmartFind – Smart Lost & Found System | College Capstone Project | Built with Spring Boot &amp; Vanilla JavaScript</p>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            loadDashboard();
+            // Handle if coming from search match link
+            const matchId = sessionStorage.getItem("match_id");
+            if (matchId) {
+                sessionStorage.removeItem("match_id");
+                setTimeout(() => {
+                    triggerMatchForLostItem(Number(matchId));
+                }, 400);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -122,6 +122,12 @@ function initNavigation(activePage = "") {
         <li><a href="admin.html" class="${activePage === 'admin' ? 'active' : ''}">Admin Panel</a></li>
     ` : "";
 
+    const apiSettingBtn = `
+        <button class="btn btn-secondary btn-sm" onclick="promptBackendUrl()" title="Current API: ${escapeHtml(API_BASE)}" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">
+            ⚙️ API URL
+        </button>
+    `;
+
     navPlaceholder.innerHTML = `
         <nav class="navbar">
             <div class="nav-container">
@@ -137,10 +143,27 @@ function initNavigation(activePage = "") {
                     <li><a href="my-reports.html" class="${activePage === 'my-reports' ? 'active' : ''}">My Reports</a></li>
                     ${adminNavHtml}
                 </ul>
-                ${authLinksHtml}
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    ${apiSettingBtn}
+                    ${authLinksHtml}
+                </div>
             </div>
         </nav>
     `;
+}
+
+function promptBackendUrl() {
+    const input = prompt(
+        "Current Backend API URL:\n" + API_BASE + "\n\n" +
+        "Enter your Backend API endpoint:\n" +
+        "• For Render: https://your-service-name.onrender.com/api\n" +
+        "• For Localhost: http://localhost:8083/api\n\n" +
+        "Leave empty to reset to default.",
+        API_BASE
+    );
+    if (input !== null) {
+        setCustomBackendUrl(input.trim());
+    }
 }
 
 // ------------------------------------------------------------------------------
@@ -168,14 +191,27 @@ async function apiRequest(endpoint, options = {}) {
         const data = await response.json().catch(() => null);
 
         if (!response.ok) {
-            const errorMsg = data && data.message ? data.message : `Server Error: HTTP ${response.status}`;
+            let errorMsg = data && data.message ? data.message : null;
+            if (!errorMsg) {
+                if (response.status === 404) {
+                    errorMsg = `Backend endpoint not found (HTTP 404) at ${API_BASE}. ` +
+                        (API_BASE.includes("onrender.com") 
+                            ? `Please ensure your backend service is created and running on Render, or click '⚙️ Backend URL' in the navigation to configure your API URL.`
+                            : `Please ensure the Spring Boot backend is running on port 8083.`);
+                } else {
+                    errorMsg = `Server Error: HTTP ${response.status}`;
+                }
+            }
             throw new Error(errorMsg);
         }
 
         return data;
     } catch (err) {
         if (err.name === "TypeError" && err.message.includes("fetch")) {
-            throw new Error("Unable to connect to SmartFind backend at http://localhost:8083. Please ensure Spring Boot is running in STS.");
+            throw new Error(`Unable to connect to SmartFind backend at ${API_BASE}. ` +
+                (API_BASE.includes("localhost") 
+                    ? "Please make sure Spring Boot is running in STS or via run-backend.bat."
+                    : "Please ensure your cloud backend on Render is active."));
         }
         throw err;
     }

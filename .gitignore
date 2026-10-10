@@ -1,0 +1,40 @@
+# ==============================================================================
+# Git Ignore Rules for SmartFind Project
+# ==============================================================================
+
+# Compiled binaries and build output
+target/
+*.class
+*.jar
+*.war
+*.ear
+
+# Maven working directory
+.mvn/
+mvnw
+mvnw.cmd
+
+# Eclipse / STS IDE files
+.settings/
+.project
+.classpath
+.factorypath
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+
+# Visual Studio Code
+.vscode/
+
+# OS generated files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+
+# Log files
+*.log
+*.system_generated/

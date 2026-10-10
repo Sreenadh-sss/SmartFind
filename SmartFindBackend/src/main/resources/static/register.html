@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register – SmartFind Lost & Found System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="navbar-placeholder"></div>
+
+    <main class="main-content">
+        <div class="auth-wrapper">
+            <div class="card">
+                <div class="card-body" style="padding: 2.2rem;">
+                    <div class="auth-header">
+                        <h2>Create an Account</h2>
+                        <p>Join SmartFind to report and track lost campus property</p>
+                    </div>
+
+                    <div id="register-alert"></div>
+
+                    <form id="register-form" onsubmit="handleRegisterSubmit(event)">
+                        <div class="form-group">
+                            <label class="form-label" for="name">Full Name</label>
+                            <input type="text" id="name" class="form-control" placeholder="e.g. John Doe" required minlength="2">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="email">Campus Email</label>
+                            <input type="email" id="email" class="form-control" placeholder="e.g. john.doe@college.edu" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="role">Account Role</label>
+                            <select id="role" class="form-control">
+                                <option value="USER">Student / Faculty (Standard User)</option>
+                                <option value="ADMIN">Campus Administrator</option>
+                            </select>
+                            <div class="form-hint">Administrators can review and delete any campus report in the Admin Panel.</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="password">Password</label>
+                            <input type="password" id="password" class="form-control" placeholder="Minimum 6 characters" required minlength="6">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="confirm-password">Confirm Password</label>
+                            <input type="password" id="confirm-password" class="form-control" placeholder="Re-enter password" required minlength="6">
+                        </div>
+
+                        <button type="submit" id="register-btn" class="btn btn-primary btn-block" style="margin-top: 1.4rem;">
+                            Register Account
+                        </button>
+                    </form>
+
+                    <div class="auth-footer">
+                        Already have an account? <a href="login.html">Sign in here</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>SmartFind – Smart Lost & Found System | College Capstone Project</p>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            initNavigation("register");
+        });
+    </script>
+</body>
+</html>

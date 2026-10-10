@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report Found Item – SmartFind System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="navbar-placeholder"></div>
+
+    <main class="main-content">
+        <div style="max-width: 680px; margin: 0 auto;">
+            <div class="page-header">
+                <div>
+                    <h1>🤝 Report a Found Item</h1>
+                    <p>Help a fellow campus student or colleague recover their misplaced belongings.</p>
+                </div>
+            </div>
+
+            <div id="report-alert-container"></div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">📝 Found Item Details Form</div>
+                    <span class="badge badge-found">Report Type: FOUND</span>
+                </div>
+                <div class="card-body">
+                    <form id="item-form" onsubmit="handleItemReportSubmit(event, 'FOUND')">
+                        <div class="form-group">
+                            <label class="form-label" for="item-name">Item Name *</label>
+                            <input type="text" id="item-name" class="form-control" placeholder="e.g. Black iPhone, Blue Notebook Bag, Car Keys" required>
+                            <div class="form-hint">Brief title of what you found.</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="item-description">Detailed Description *</label>
+                            <textarea id="item-description" class="form-control" placeholder="Describe appearance, condition, where it was spotted, distinctive marks..." required></textarea>
+                            <div class="form-hint">Do not include private codes or PINs. Keep details clear and objective.</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="item-location">Location Where Found *</label>
+                            <input type="text" id="item-location" class="form-control" placeholder="e.g. Library Study Desk, Cafeteria Table, Auditorium A" required>
+                            <div class="form-hint">Precise spot on campus where the object was discovered.</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="item-date">Date Found *</label>
+                            <input type="date" id="item-date" class="form-control" required>
+                        </div>
+
+                        <div style="display: flex; gap: 0.8rem; margin-top: 1.5rem;">
+                            <button type="submit" id="submit-btn" class="btn btn-success" style="flex: 1;">
+                                Submit Found Report
+                            </button>
+                            <a href="index.html" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>SmartFind – Smart Lost & Found System | College Capstone Project</p>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            initNavigation("found");
+            requireAuth();
+            const dateInput = document.getElementById("item-date");
+            if (dateInput) {
+                dateInput.value = new Date().toISOString().split("T")[0];
+            }
+        });
+    </script>
+</body>
+</html>

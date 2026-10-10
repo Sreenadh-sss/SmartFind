@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administrator Panel – SmartFind System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="navbar-placeholder"></div>
+
+    <main class="main-content">
+        <div class="page-header">
+            <div>
+                <h1>🛡️ Campus Administration Panel</h1>
+                <p>System oversight, content moderation, and report management (Restricted to ADMIN role)</p>
+            </div>
+            <div style="display: flex; gap: 0.6rem; align-items: center;">
+                <select id="admin-filter-type" class="form-control" style="width: 160px; font-size: 0.88rem;">
+                    <option value="">All Reports</option>
+                    <option value="LOST">Lost Reports Only</option>
+                    <option value="FOUND">Found Reports Only</option>
+                </select>
+                <button class="btn btn-secondary btn-sm" onclick="loadAdminReports()">
+                    🔄 Refresh
+                </button>
+            </div>
+        </div>
+
+        <div id="admin-alert"></div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">📋 All Campus Reports Moderation</div>
+            </div>
+            <div class="card-body" style="padding: 0;">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Item Name</th>
+                                <th>Type</th>
+                                <th>Location</th>
+                                <th>Date</th>
+                                <th>Submitted By</th>
+                                <th>Admin Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-reports-table">
+                            <tr>
+                                <td colspan="7" style="text-align: center; padding: 2rem;">Loading admin data...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>SmartFind – Smart Lost & Found System | College Capstone Project | Admin Portal</p>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            initAdminPage();
+        });
+    </script>
+</body>
+</html>

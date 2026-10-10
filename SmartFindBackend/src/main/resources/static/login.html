@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login – SmartFind Lost & Found System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="navbar-placeholder"></div>
+
+    <main class="main-content">
+        <div class="auth-wrapper">
+            <div class="card">
+                <div class="card-body" style="padding: 2.2rem;">
+                    <div class="auth-header">
+                        <h2>Welcome Back</h2>
+                        <p>Sign in to your SmartFind campus account</p>
+                    </div>
+
+                    <div id="login-alert"></div>
+
+                    <form id="login-form" onsubmit="handleLoginSubmit(event)">
+                        <div class="form-group">
+                            <label class="form-label" for="email">Campus Email Address</label>
+                            <input type="email" id="email" class="form-control" placeholder="e.g. student@smartfind.com" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="password">Password</label>
+                            <input type="password" id="password" class="form-control" placeholder="Enter your password" required>
+                        </div>
+
+                        <button type="submit" id="login-btn" class="btn btn-primary btn-block" style="margin-top: 1.4rem;">
+                            Sign In to SmartFind
+                        </button>
+                    </form>
+
+                    <div style="margin-top: 1.5rem; padding: 0.9rem; background: #f8fafc; border-radius: 8px; font-size: 0.82rem; color: #64748b; border: 1px solid #e2e8f0;">
+                        <strong>🔑 Demo Accounts Ready:</strong><br>
+                        • Student: <code>student@smartfind.com</code> / <code>student123</code><br>
+                        • Admin: <code>admin@smartfind.com</code> / <code>admin123</code>
+                    </div>
+
+                    <div class="auth-footer">
+                        Don't have an account yet? <a href="register.html">Register here</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>SmartFind – Smart Lost & Found System | College Capstone Project</p>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            initNavigation("login");
+            const user = getLoggedInUser();
+            if (user) {
+                // If already logged in, redirect to dashboard
+                window.location.href = "index.html";
+            }
+        });
+    </script>
+</body>
+</html>

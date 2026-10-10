@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report Lost Item – SmartFind System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="navbar-placeholder"></div>
+
+    <main class="main-content">
+        <div style="max-width: 680px; margin: 0 auto;">
+            <div class="page-header">
+                <div>
+                    <h1>🔍 Report a Lost Item</h1>
+                    <p>Submit item details so SmartFind's AI engine can find matches against reported found items.</p>
+                </div>
+            </div>
+
+            <div id="report-alert-container"></div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">📝 Lost Item Details Form</div>
+                    <span class="badge badge-lost">Report Type: LOST</span>
+                </div>
+                <div class="card-body">
+                    <form id="item-form" onsubmit="handleItemReportSubmit(event, 'LOST')">
+                        <div class="form-group">
+                            <label class="form-label" for="item-name">Item Name *</label>
+                            <input type="text" id="item-name" class="form-control" placeholder="e.g. Apple iPhone 13, Navy Blue Backpack, Casio Watch" required>
+                            <div class="form-hint">Provide the specific brand or object name for accurate AI matching.</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="item-description">Detailed Description *</label>
+                            <textarea id="item-description" class="form-control" placeholder="Describe color, size, case, unique scratches, logos, contents or distinctive marks..." required></textarea>
+                            <div class="form-hint">Our keyword matching algorithm compares key terms in this description.</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="item-location">Location Where Lost *</label>
+                            <input type="text" id="item-location" class="form-control" placeholder="e.g. Central Library, Cafeteria Block A, Science Lab 2" required>
+                            <div class="form-hint">Campus building, room number, floor, or nearby landmark.</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="item-date">Date Lost *</label>
+                            <input type="date" id="item-date" class="form-control" required>
+                        </div>
+
+                        <div style="display: flex; gap: 0.8rem; margin-top: 1.5rem;">
+                            <button type="submit" id="submit-btn" class="btn btn-danger" style="flex: 1;">
+                                Submit Lost Report
+                            </button>
+                            <a href="index.html" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>SmartFind – Smart Lost & Found System | College Capstone Project</p>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            initNavigation("lost");
+            requireAuth();
+            // Default date picker to today
+            const dateInput = document.getElementById("item-date");
+            if (dateInput) {
+                dateInput.value = new Date().toISOString().split("T")[0];
+            }
+        });
+    </script>
+</body>
+</html>

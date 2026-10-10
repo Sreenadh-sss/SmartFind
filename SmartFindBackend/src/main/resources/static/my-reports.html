@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Reports – SmartFind System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="navbar-placeholder"></div>
+
+    <main class="main-content">
+        <div class="page-header">
+            <div>
+                <h1>📂 My Submitted Reports</h1>
+                <p>Manage reports you have submitted. You can review statuses or delete resolved items.</p>
+            </div>
+            <div style="display: flex; gap: 0.6rem;">
+                <a href="lost-item.html" class="btn btn-danger btn-sm">➕ Report Lost Item</a>
+                <a href="found-item.html" class="btn btn-success btn-sm">➕ Report Found Item</a>
+            </div>
+        </div>
+
+        <div id="my-reports-alert"></div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">📋 Your Items History</div>
+            </div>
+            <div class="card-body" style="padding: 0;">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Report ID</th>
+                                <th>Item Name</th>
+                                <th>Type</th>
+                                <th>Location</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="my-reports-table">
+                            <tr>
+                                <td colspan="6" style="text-align: center; padding: 2rem;">Loading your reports...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>SmartFind – Smart Lost & Found System | College Capstone Project</p>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            initMyReportsPage();
+        });
+    </script>
+</body>
+</html>

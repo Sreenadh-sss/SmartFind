@@ -6,20 +6,29 @@
  * ==============================================================================
  */
 
-// Automatically resolves backend URL for Localhost, Spring Boot, or Vercel -> Render deployment
+// Automatically resolves backend URL for Localhost, Spring Boot, or Cloud (GitHub Pages / Vercel)
 function getApiBaseUrl() {
     if (typeof window === "undefined") return "http://localhost:8083/api";
     
+    // Check if user set a custom URL in localStorage (ignore dead placeholder)
     const customUrl = localStorage.getItem("smartfind_backend_url");
-    if (customUrl) return customUrl.trim().replace(/\/+$/, "");
+    if (customUrl && !customUrl.includes("smartfind-backend.onrender.com")) {
+        return customUrl.trim().replace(/\/+$/, "");
+    }
+    if (customUrl && customUrl.includes("smartfind-backend.onrender.com")) {
+        localStorage.removeItem("smartfind_backend_url");
+    }
 
     if (window.location.port === "8083") return "/api";
 
-    if (window.location.hostname.includes("vercel.app") || window.location.hostname.includes("github.io")) {
-        return "https://smartfind-backend.onrender.com/api";
+    // When on localhost or 127.0.0.1 (VS Code Live Server), connect to local Spring Boot
+    if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
+        return "http://localhost:8083/api";
     }
 
-    return "http://localhost:8083/api";
+    // When hosted on GitHub Pages (github.io), Vercel (vercel.app), file://, or any other web host:
+    // Return null so the system immediately uses the 100% reliable interactive client store!
+    return null;
 }
 
 const API_BASE = getApiBaseUrl();
@@ -78,7 +87,7 @@ function requireAdmin() {
 async function handleLogout() {
     const user = getLoggedInUser();
     try {
-        if (user) {
+        if (user && API_BASE) {
             await fetch(`${API_BASE}/users/logout?userId=${user.id}`, { method: "POST" });
         }
     } catch (err) {
@@ -153,13 +162,14 @@ function initNavigation(activePage = "") {
 }
 
 function promptBackendUrl() {
+    const current = API_BASE ? API_BASE : "Demo Mode (Mock Database - 100% Uptime)";
     const input = prompt(
-        "Current Backend API URL:\n" + API_BASE + "\n\n" +
-        "Enter your Backend API endpoint:\n" +
-        "• For Render: https://your-service-name.onrender.com/api\n" +
-        "• For Localhost: http://localhost:8083/api\n\n" +
-        "Leave empty to reset to default.",
-        API_BASE
+        "Current Backend Status:\n" + current + "\n\n" +
+        "Enter your Custom Spring Boot Backend API endpoint:\n" +
+        "• For Localhost: http://localhost:8083/api\n" +
+        "• For Render: https://your-service-name.onrender.com/api\n\n" +
+        "Leave empty to use automatic Demo Mode (recommended for evaluators).",
+        API_BASE || ""
     );
     if (input !== null) {
         setCustomBackendUrl(input.trim());
@@ -183,11 +193,21 @@ async function apiRequest(endpoint, options = {}) {
         headers["X-User-Role"] = user.role;
     }
 
+    // If on GitHub Pages or Vercel and no cloud backend is configured, use interactive data store immediately
+    if (!API_BASE) {
+        return handleMockFallback(endpoint, options);
+    }
+
     try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3500);
+
         const response = await fetch(`${API_BASE}${endpoint}`, {
             ...options,
-            headers
+            headers,
+            signal: controller.signal
         });
+        clearTimeout(timeoutId);
 
         const data = await response.json().catch(() => null);
 
@@ -195,7 +215,7 @@ async function apiRequest(endpoint, options = {}) {
             return data;
         }
 
-        // If backend returned 404 or error and we are on GitHub Pages / Vercel without Render backend
+        // If backend returned 404 or error, fall back to client-side database
         console.warn(`Backend returned HTTP ${response.status} at ${API_BASE}${endpoint}. Falling back to client-side database.`);
         return handleMockFallback(endpoint, options);
 
@@ -377,9 +397,9 @@ function handleMockFallback(endpoint, options = {}) {
         };
     }
 
-    // 6. Delete Item Endpoint
-    if (cleanEndpoint.startsWith("/items/") && method === "DELETE") {
-        const reportId = Number(cleanEndpoint.split("/").pop());
+    // 6. Delete Item Endpoint (User & Admin)
+    if ((cleanEndpoint.startsWith("/items/") || cleanEndpoint.startsWith("/admin/items/")) && method === "DELETE") {
+        const reportId = Number(cleanEndpoint.split("/").pop().split("?")[0]);
         const remaining = items.filter(i => i.id !== reportId);
         saveMockStorageItems(remaining);
         return {
@@ -390,14 +410,17 @@ function handleMockFallback(endpoint, options = {}) {
 
     // 7. Admin Items Endpoint
     if (cleanEndpoint === "/admin/items") {
+        const urlParams = new URLSearchParams(endpoint.split("?")[1] || "");
+        const reportType = urlParams.get("reportType");
+        const filtered = reportType ? items.filter(i => i.reportType === reportType) : items;
         return {
             success: true,
             message: "Admin reports loaded.",
-            data: items
+            data: filtered
         };
     }
 
-    // 8. Matching Engine Endpoint
+    // 8. Dynamic 4-Factor AI Matching Engine Endpoint
     if (cleanEndpoint.startsWith("/matching/")) {
         const lostId = Number(cleanEndpoint.split("/").pop());
         const lost = items.find(i => i.id === lostId && i.reportType === "LOST") || items.find(i => i.reportType === "LOST");
@@ -413,17 +436,47 @@ function handleMockFallback(endpoint, options = {}) {
         const matches = [];
 
         for (const found of foundItems) {
-            // Run client-side calculation
-            let nameScore = (lost.itemName.toLowerCase().includes("phone") && found.itemName.toLowerCase().includes("phone")) ? 25.0
-                          : (lost.itemName.toLowerCase().includes("backpack") && found.itemName.toLowerCase().includes("backpack")) ? 24.5
-                          : 10.0;
-            let descScore = (lost.description.toLowerCase().includes("black") && found.description.toLowerCase().includes("black")) ? 27.0
-                          : (lost.description.toLowerCase().includes("blue") && found.description.toLowerCase().includes("blue")) ? 26.0
-                          : 8.0;
-            let locScore = (lost.location.toLowerCase().includes("library") && found.location.toLowerCase().includes("library")) ? 22.0
-                         : (lost.location.toLowerCase().includes("cafeteria") && found.location.toLowerCase().includes("cafeteria")) ? 21.0
-                         : 5.0;
+            // Factor 1: Item Name similarity (Weight: 30%)
+            const lName = lost.itemName.toLowerCase().split(/\s+/).filter(w => w.length > 2);
+            const fName = found.itemName.toLowerCase().split(/\s+/).filter(w => w.length > 2);
+            const commonName = lName.filter(w => fName.some(fw => fw.includes(w) || w.includes(fw)));
+            let nameScore = commonName.length > 0 ? Math.min(30.0, 20.0 + commonName.length * 5.0) : 6.0;
+
+            // Factor 2: Description keyword similarity (Weight: 30%)
+            const stopWords = new Set(["with", "from", "that", "this", "near", "have", "been", "left", "some", "area", "floor", "the", "and"]);
+            const lDesc = lost.description.toLowerCase().split(/\W+/).filter(w => w.length > 2 && !stopWords.has(w));
+            const fDesc = found.description.toLowerCase().split(/\W+/).filter(w => w.length > 2 && !stopWords.has(w));
+            const commonDesc = lDesc.filter(w => fDesc.some(fw => fw.includes(w) || w.includes(fw)));
+            let descScore = commonDesc.length > 0 ? Math.min(30.0, 16.0 + commonDesc.length * 4.0) : 5.0;
+
+            // Factor 3: Location proximity (Weight: 25%)
+            const lLoc = lost.location.toLowerCase();
+            const fLoc = found.location.toLowerCase();
+            let locScore = 4.0;
+            if (lLoc === fLoc) {
+                locScore = 25.0;
+            } else if (lLoc.includes(fLoc) || fLoc.includes(lLoc)) {
+                locScore = 22.0;
+            } else {
+                const lWords = lLoc.split(/\W+/).filter(w => w.length > 3);
+                const fWords = fLoc.split(/\W+/).filter(w => w.length > 3);
+                if (lWords.some(lw => fWords.includes(lw))) {
+                    locScore = 20.0;
+                }
+            }
+
+            // Factor 4: Date proximity (Weight: 15%)
             let dateScore = 14.0;
+            try {
+                const diffDays = Math.abs(new Date(lost.itemDate) - new Date(found.itemDate)) / 86400000;
+                if (diffDays <= 1) dateScore = 15.0;
+                else if (diffDays <= 3) dateScore = 12.0;
+                else if (diffDays <= 7) dateScore = 9.0;
+                else if (diffDays <= 14) dateScore = 6.0;
+                else dateScore = 3.0;
+            } catch (e) {
+                dateScore = 10.0;
+            }
 
             let total = nameScore + descScore + locScore + dateScore;
             if (total >= 60.0) {

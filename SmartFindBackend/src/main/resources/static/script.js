@@ -6,10 +6,32 @@
  * ==============================================================================
  */
 
-// Automatically connects to local backend or relative path if served directly by Spring Boot
-const API_BASE = (typeof window !== "undefined" && window.location.port === "8083")
-    ? "/api"
-    : "http://localhost:8083/api";
+// Automatically resolves backend URL for Localhost, Spring Boot, or Vercel -> Render deployment
+function getApiBaseUrl() {
+    if (typeof window === "undefined") return "http://localhost:8083/api";
+    
+    const customUrl = localStorage.getItem("smartfind_backend_url");
+    if (customUrl) return customUrl.trim().replace(/\/+$/, "");
+
+    if (window.location.port === "8083") return "/api";
+
+    if (window.location.hostname.includes("vercel.app") || window.location.hostname.includes("github.io")) {
+        return "https://smartfind-backend.onrender.com/api";
+    }
+
+    return "http://localhost:8083/api";
+}
+
+const API_BASE = getApiBaseUrl();
+
+function setCustomBackendUrl(url) {
+    if (url) {
+        localStorage.setItem("smartfind_backend_url", url);
+    } else {
+        localStorage.removeItem("smartfind_backend_url");
+    }
+    window.location.reload();
+}
 
 // ------------------------------------------------------------------------------
 // 1. Session & Authentication Management

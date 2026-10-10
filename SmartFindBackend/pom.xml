@@ -45,6 +45,13 @@
 			<scope>runtime</scope>
 		</dependency>
 
+		<!-- H2 In-Memory Database for Zero-Configuration Cloud Deployments (Render) -->
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+
 		<!-- Spring Security Crypto for BCrypt Password Hashing -->
 		<dependency>
 			<groupId>org.springframework.security</groupId>

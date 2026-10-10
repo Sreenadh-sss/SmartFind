@@ -15,6 +15,7 @@ WORKDIR /app
 COPY --from=builder /app/target/smartfind-backend-1.0.0.jar app.jar
 
 ENV PORT=8083
+ENV SPRING_PROFILES_ACTIVE=render
 EXPOSE 8083
 
 ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "app.jar"]

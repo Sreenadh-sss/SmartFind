@@ -1,0 +1,17 @@
+# ==============================================================================
+# Render Blueprint Configuration for SmartFind System
+# https://render.com/docs/blueprint-spec
+# ==============================================================================
+services:
+  - type: web
+    name: smartfind-backend
+    runtime: docker
+    dockerContext: SmartFindBackend
+    dockerfilePath: SmartFindBackend/Dockerfile
+    plan: free
+    region: oregon
+    envVars:
+      - key: PORT
+        value: 8083
+      - key: SPRING_PROFILES_ACTIVE
+        value: render
